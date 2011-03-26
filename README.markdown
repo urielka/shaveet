@@ -20,9 +20,13 @@ Shaveet is avaliabe in PyPI,just run:
 Running
 -------
 To run Shaveet in testing mode,run:
+
   shaveet
+
 To run in daemon mode(for production use) run:
+
   shaveet -d
+
 
 How do I use it?
 ----------------
