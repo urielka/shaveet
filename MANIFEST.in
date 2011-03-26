@@ -9,4 +9,5 @@ shaveet/gc.py
 shaveet/lookup.py
 shaveet/main.py
 shaveet/utils.py
-shaveet/static/shaveet.js
+include shaveet/static/shaveet.js
+recursive-include examples *

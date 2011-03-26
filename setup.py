@@ -12,6 +12,7 @@ setup(name='shaveet',
       license = "MIT",
       keywords = "comet gevent server",
       url = "https://github.com/urielka/shaveet",
+      download_url = "https://github.com/urielka/shaveet/downloads",
       zip_safe = False,
       scripts = ['scripts/shaveet'],
 )
