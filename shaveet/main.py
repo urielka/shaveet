@@ -53,7 +53,7 @@ if __name__ == "__main__":
   
   formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
   #setup handlers
-  fh = logging.handlers.RotatingFileHandler(BASE_PATH + "/logs/shaveet.log",maxBytes = 1024 * 1024,backupCount=3)
+  fh = logging.handlers.RotatingFileHandler(config.LOG_PATH,maxBytes = 1024 * 1024,backupCount=3)
   ch = logging.StreamHandler()
   #set formmaters
   fh.setFormatter(formatter)
