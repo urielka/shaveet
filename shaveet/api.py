@@ -10,7 +10,8 @@ except ImportError:#Python 2.5
 #3rd
 import wsgi_jsonrpc
 #binfire
-from shaveet.config import COMET_TIMEOUT
+from shaveet.utils import IPMiddleware
+from shaveet.config import COMET_TIMEOUT,IPS
 from shaveet.lookup import get_client,get_client_with_key,get_channel,channel_exist,discard_client,create_client
 from shaveet.channel import get_updates
 
@@ -129,6 +130,8 @@ def kill_client(client_id):
   return discard_client(get_client(client_id))
   
 #this is the wsgi application entry point
-handle = wsgi_jsonrpc.WSGIJSONRPCApplication(methods=[subscribe,subscribe_many,unsubscribe,unsubscribe_many,unsubscribe_all_channel,new_message,
+api_wsgi = wsgi_jsonrpc.WSGIJSONRPCApplication(methods=[subscribe,subscribe_many,unsubscribe,unsubscribe_many,unsubscribe_all_channel,new_message,
                                                         get_channel_clients,get_client_channels,kill_client,create_client])
+                                                        
+handle = IPMiddleware(api_wsgi,IPS)
 

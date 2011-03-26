@@ -27,3 +27,17 @@ def waitany(events):
   finally:
     for ev in events:
       ev.unlink(switch)
+      
+      
+class IPMiddleware(object):
+  def __init__(self,app,ips):
+    self.app = app
+    self.ips = set(ips)
+    
+  def __call__(self,env,start_response):
+    
+    if env.get('REMOTE_ADDR') in self.ips or not self.ips:
+      return self.app(env,start_response)
+    else:
+      start_response('404 Not Found',[('Content-Type', 'text/html')])
+      return ['Nothing here buddy']
