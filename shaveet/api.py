@@ -40,9 +40,6 @@ def message_updates(env,start_response):
     return "Not Found\r\n"  
 
 
-def create_client(client_id):
-  return create_client(client_id)
-
 def subscribe(client_id,channel_name):
   """
   subscribe the client to the channel
