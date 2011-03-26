@@ -12,5 +12,6 @@ setup(name='shaveet',
       license = "MIT",
       keywords = "comet gevent server",
       url = "https://github.com/urielka/shaveet",
-      zip_safe = False
+      zip_safe = False,
+      scripts = ['scripts/shaveet'],
 )
