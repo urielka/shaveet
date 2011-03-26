@@ -1,6 +1,6 @@
 from setuptools import setup
 
-setup(name='Shaveet', 
+setup(name='shaveet', 
       version='0.1', 
       packages=['shaveet'],
       package_data={'shaveet': ['static/*.js']},
