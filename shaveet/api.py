@@ -11,7 +11,7 @@ except ImportError:#Python 2.5
 import wsgi_jsonrpc
 #binfire
 from shaveet.config import COMET_TIMEOUT
-from shaveet.lookup import get_client,get_channel,channel_exist,discard_client
+from shaveet.lookup import get_client,get_client_with_key,get_channel,channel_exist,discard_client,create_client
 from shaveet.channel import get_updates
 
 def message_updates(env,start_response):
@@ -20,12 +20,12 @@ def message_updates(env,start_response):
   """
   #parse request,looks like ?client_id=....&client_id=....&callback=...
   qs = parse_qs(env['QUERY_STRING'])
-  
+  #client_id is client_id;key
   client_ids = qs["client_id"]
   callback = qs["callback"][0]
   try:
     cursors = []
-    clients = [get_client(client_id,create=False) for client_id in client_ids]
+    clients = [get_client_with_key(client_id_key) for client_id_key in client_ids]
     #get the updates,blocks if no updates found
     updates = get_updates(clients)
     #if updates found update the clients cursors
@@ -38,6 +38,10 @@ def message_updates(env,start_response):
   except KeyError:#one of the clients doesn't exists
     start_response('404 Not Found', [('Content-Type', 'text/plain')])
     return "Not Found\r\n"  
+
+
+def create_client(client_id):
+  return create_client(client_id)
 
 def subscribe(client_id,channel_name):
   """
@@ -129,5 +133,5 @@ def kill_client(client_id):
   
 #this is the wsgi application entry point
 handle = wsgi_jsonrpc.WSGIJSONRPCApplication(methods=[subscribe,subscribe_many,unsubscribe,unsubscribe_many,unsubscribe_all_channel,new_message,
-                                                        get_channel_clients,get_client_channels,kill_client])
+                                                        get_channel_clients,get_client_channels,kill_client,create_client])
 

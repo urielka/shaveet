@@ -3,6 +3,7 @@ from time import time
 #gevent
 from gevent.event import Event
 #shaveet
+from shaveet.utils import guid
 from shaveet.consts import SYSTEM_ID,ADMIN_CHANNEL
 from shaveet.config import MAX_MESSAGES_PER_CHANNEL,MAX_IDLE_CLIENT,COMET_TIMEOUT,MIN_ALIVE_TIME
 import shaveet#for api
@@ -11,7 +12,7 @@ class Client(object):
   """
   Represents a client in shaveet,a client is identified by string called id and is unique per client.
   """
-  __slots__ = ('id','channels','ts','create_ts','channels_event','is_waiting')
+  __slots__ = ('id','channels','ts','create_ts','channels_event','is_waiting','key')
 
   def __init__(self,id):
     self.id = id
@@ -22,6 +23,7 @@ class Client(object):
     self.create_ts = int(time())
     self.channels_event = Event()
     self.is_waiting = False
+    self.key = guid()
 
   def touch(self):
     self.ts = int(time())
@@ -76,12 +78,16 @@ _clients = {}
 ###############
 #  client     #
 ###############
-def get_client(client_id,create=True):
+
+def create_client(client_id):
   global _clients
   if not client_id in _clients and create:
     _clients[client_id] = Client(client_id)
-  client = _clients[client_id]  
-  return client
+  return _clients[client_id].key
+  
+def get_client(client_id):
+  global _clients
+  return _clients[client_id]  
   
 def client_exists(client_id):
   global _clients
@@ -95,7 +101,13 @@ def discard_client(client):
     client.remove_from_channels()
     del _clients[client.id]
     del client
-  
+    
+def get_client_with_key(client_id_key)
+  client_id,key = client_id_key.split(";")
+  client = _clients[client_id]
+  if client.key != key:
+    raise KeyError("Wrong key for client")
+  return client
 ###############
 #  channel    #
 ###############

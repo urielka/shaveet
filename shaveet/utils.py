@@ -1,4 +1,8 @@
 from gevent.hub import getcurrent,get_hub
+from uuid import uuid4
+
+def guid():
+  return str(uuid4()).replace("-","")
 
 def maxfd():
     import resource
