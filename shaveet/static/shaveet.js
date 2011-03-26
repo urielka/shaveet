@@ -1,45 +1,45 @@
-var CometBus = {
+var Shaveet = {
   _listeners:{},
   _baseURL:null,
   client_ids:[],
   initiated:false,
-  init:function(client_id)
+  init:function(client_id,key)
   {
-    CometBus.client_ids.push(client_id);
-    if(!CometBus.initiated)
+    Shaveet.client_ids.push(client_id+";" + key);
+    if(!Shaveet.initiated)
     {
-      CometBus.initiated = true;
-      CometBus.getBaseURL();
-      CometBus.Transports.CORS.init();
+      Shaveet.initiated = true;
+      Shaveet.getBaseURL();
+      Shaveet.Transports.CORS.init();
     }
-    setTimeout(CometBus.getEvents,1);
+    setTimeout(Shaveet.getEvents,1);
   },
   getBaseURL:function()
   {
     var scripts = document.getElementsByTagName("script");
     for(var i=0;i<scripts.length;i++)
-      if(scripts[i].src.indexOf("/static/cometbus.js") != -1)
+      if(scripts[i].src.indexOf("/static/shaveet.js") != -1)
       {
-        CometBus._baseURL = scripts[i].src.replace("/static/cometbus.js","").replace(/\?.*$/,"");
+        Shaveet._baseURL = scripts[i].src.replace("/static/shaveet.js","").replace(/\?.*$/,"");
         break;
       }
   },
   getEvents:function()
   {
     var ids = "";
-    for(var i=0;i<CometBus.client_ids.length;i++)
-      ids += "&client_id=" + CometBus.client_ids[i];
-    var url = CometBus._baseURL + '/message_updates?callback=?' + ids;
-    if(CometBus.Transports.CORS.provider)//has support for Cross Domain Requests
-      CometBus.Transports.CORS(url,CometBus.onEvents,CometBus.onError);
+    for(var i=0;i<Shaveet.client_ids.length;i++)
+      ids += "&client_id=" + Shaveet.client_ids[i];
+    var url = Shaveet._baseURL + '/message_updates?callback=?' + ids;
+    if(Shaveet.Transports.CORS.provider)//has support for Cross Domain Requests
+      Shaveet.Transports.CORS(url,Shaveet.onEvents,Shaveet.onError);
     else
-      CometBus.Transports.JSONP(url,CometBus.onEvents,CometBus.onError);
+      Shaveet.Transports.JSONP(url,Shaveet.onEvents,Shaveet.onError);
   },
   onEvents:function(channels)
   {
     for(var channelName in channels)
     {
-      var listeners = CometBus._listeners[channelName] ? CometBus._listeners[channelName] : CometBus._listeners["*"];
+      var listeners = Shaveet._listeners[channelName] ? Shaveet._listeners[channelName] : Shaveet._listeners["*"];
       if(listeners)
       {
         var updates = channels[channelName];    
@@ -47,7 +47,7 @@ var CometBus = {
           updates[j] = {
             id:updates[j][0],
             client_id:updates[j][2],
-            payload:CometBus._safeEval(updates[j][1]),
+            payload:Shaveet._safeEval(updates[j][1]),
             payload_raw:updates[j][1],
             channelName:channelName
           };
@@ -58,22 +58,22 @@ var CometBus = {
         }	
       }
     }
-    setTimeout(CometBus.getEvents,1);
+    setTimeout(Shaveet.getEvents,1);
   },  
   onError:function()
   {
     //on error retry to reconnect to Comet service
     //TODO:on 404 status code(i.e. the comet client was GCed) show a alert and refresh the page
-    setTimeout(CometBus.getEvents,1000);
+    setTimeout(Shaveet.getEvents,1000);
   },
   listenBulk:function(channel_name,func){
-    if(!CometBus._listeners[channel_name])
-      CometBus._listeners[channel_name] = [];
-    CometBus._listeners[channel_name].push(func);
+    if(!Shaveet._listeners[channel_name])
+      Shaveet._listeners[channel_name] = [];
+    Shaveet._listeners[channel_name].push(func);
   },
   listenSingle:function(channel_name,func)
   {
-    return CometBus.listenBulk(channel_name,function(updates)
+    return Shaveet.listenBulk(channel_name,function(updates)
     {
       for(var i=0;i<updates.length;i++)
         func(updates[i]);
@@ -81,7 +81,7 @@ var CometBus = {
   },
   stopListening:function(channel_name)
   {
-    delete CometBus._listeners[channel_name];
+    delete Shaveet._listeners[channel_name];
   },
   _safeEval:function(str)
   {
@@ -125,10 +125,10 @@ MutableSet.prototype = {
   }
 };
 
-CometBus.Transports = {};
+Shaveet.Transports = {};
 
-CometBus.Transports.CORS = function (url,clbk,error){
-  var request = new CometBus.Transports.CORS.provider();
+Shaveet.Transports.CORS = function (url,clbk,error){
+  var request = new Shaveet.Transports.CORS.provider();
   url = url.replace("callback=?","callback=noop");
   request.open("get",url,true);
   request.onload = function(){
@@ -140,16 +140,16 @@ CometBus.Transports.CORS = function (url,clbk,error){
   request.send();
 };
 
-CometBus.Transports.CORS.init = function()
+Shaveet.Transports.CORS.init = function()
 {
   var xhr = new XMLHttpRequest();
   if ("withCredentials" in xhr)
-    CometBus.Transports.CORS.provider = XMLHttpRequest;
+    Shaveet.Transports.CORS.provider = XMLHttpRequest;
   else if (typeof XDomainRequest != "undefined")
-    CometBus.Transports.CORS.provider = XDomainRequest;
+    Shaveet.Transports.CORS.provider = XDomainRequest;
   else
-    CometBus.Transports.CORS.provider = false;
+    Shaveet.Transports.CORS.provider = false;
 };
 
-CometBus.Transports.JSONP = function(url,clbk,error){$.jsonp({url:url,success:clbk,error:error});};
+Shaveet.Transports.JSONP = function(url,clbk,error){$.jsonp({url:url,success:clbk,error:error});};
 
