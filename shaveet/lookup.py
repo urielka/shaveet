@@ -81,7 +81,7 @@ _clients = {}
 
 def create_client(client_id):
   global _clients
-  if not client_id in _clients and create:
+  if not client_id in _clients:
     _clients[client_id] = Client(client_id)
   return _clients[client_id].key
   
@@ -102,8 +102,9 @@ def discard_client(client):
     del _clients[client.id]
     del client
     
-def get_client_with_key(client_id_key)
-  client_id,key = client_id_key.split(";")
+def get_client_with_key(client_id_key):
+  print client_id_key
+  client_id,key = client_id_key.split("|")
   client = _clients[client_id]
   if client.key != key:
     raise KeyError("Wrong key for client")
