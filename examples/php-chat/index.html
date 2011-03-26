@@ -1,10 +1,57 @@
 <html>
-	<head>
-		<script src="http://localhost:8082/static/shaveet.js"></script>
-	</head>
-	<body>
-		<div>
-		</div>
-		
-	</body>
+  <head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js"></script>
+    <script src="http://jquery-jsonp.googlecode.com/files/jquery.jsonp-2.1.4.min.js"></script>
+    <script src="http://localhost:8082/static/shaveet.js"></script>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/base/jquery-ui.css" rel="stylesheet"/>
+    <script>
+      $(function()
+      {
+        var client_id = null;
+        $("#dialog-form").dialog({
+          autoOpen: false,
+          height: 300,
+          width: 350,
+          modal: true,
+          buttons: {
+            'OK': function() {
+                $(this).dialog('close');
+                createClient();
+            },
+          }
+        });
+
+        function newMessage()
+        {
+            $.get('chat.php?action=new_message&msg=' + $("#txtMsg").val() + '&client_id=' + client_id ,function(){});
+            $("#txtMsg").val("");
+        }
+
+        function createClient() {
+            $.getJSON('chat.php?action=create_client&name=' + $("#dialog-form input").val(),function(data){
+              Shaveet.init(data.client_id,data.key);
+              client_id = data.client_id;
+              Shaveet.listenSingle('chat-room',function(msg){
+                $("#messages").append("<div>" + msg.client_id.split("_")[0] + ":" + msg.payload_raw +"</div>");
+              });
+            });
+        }
+
+        $("input[type=button]").click(newMessage);
+        $("#dialog-form").dialog('open');
+      });
+    </script>
+  </head>
+  <body>
+      <div id="messages" style="border:1px solid #C0C0C0;width:600px;height:300px;overflow-y: scroll;">
+  
+      </div>
+      <input type="text" id="txtMsg"/>
+      <input type="button" value="post"/>
+      <div id="dialog-form">
+          Enter your name:<input type="text"/>
+      </div>
+  </body>
 </html>
+
