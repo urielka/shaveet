@@ -104,7 +104,7 @@ def discard_client(client):
     
 def get_client_with_key(client_id_key):
   print client_id_key
-  client_id,key = client_id_key.split("|")
+  client_id,key = client_id_key.split("_!!_")
   client = _clients[client_id]
   if client.key != key:
     raise KeyError("Wrong key for client")
