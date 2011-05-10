@@ -45,10 +45,10 @@ def main(options):
   except KeyboardInterrupt:
     server.stop()
 
-if __name__ == "__main__":
+def cli_start():
   setprocname("shaveet")
   parser = OptionParser()
-  parser.add_option("-d", "--daemon", dest="daemon",help="ruan as daemon",action="store_true",default=False)
+  parser.add_option("-d", "--daemon", dest="daemon",help="run as daemon",action="store_true",default=False)
   (options, args) = parser.parse_args()
   
   formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
@@ -73,3 +73,7 @@ if __name__ == "__main__":
     logger.addHandler(ch)
     logger_wsgi.addHandler(ch)
     main(options)
+    
+if __name__ == "__main__":
+    cli_start()
+    

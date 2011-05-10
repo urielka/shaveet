@@ -14,5 +14,8 @@ setup(name='shaveet',
       url = "https://github.com/urielka/shaveet",
       download_url = "https://github.com/urielka/shaveet/downloads",
       zip_safe = False,
-      scripts = ['scripts/shaveet'],
+      entry_points = '''
+        [console_scripts]
+        shaveet = shaveet.main:cli_start
+        ''',
 )
