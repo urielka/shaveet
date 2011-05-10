@@ -5,7 +5,7 @@ var Shaveet = {
   initiated:false,
   init:function(client_id,key)
   {
-    Shaveet.client_ids.push(client_id+"|" + key);
+    Shaveet.client_ids.push(client_id+"_!!_" + key);
     if(!Shaveet.initiated)
     {
       Shaveet.initiated = true;
