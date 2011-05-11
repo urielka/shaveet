@@ -22,7 +22,7 @@ def message_updates(env,start_response):
   #parse request,looks like ?client_id=....&client_id=....&callback=...
   qs = parse_qs(env['QUERY_STRING'])
   #client_id is client_id;key
-  client_ids = qs["client_id"]
+  client_ids = [id.decode('utf8') for id in qs["client_id"]]
   callback = qs["callback"][0]
   try:
     cursors = []
