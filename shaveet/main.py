@@ -37,7 +37,7 @@ def wsgi_main(env, start_response):
     return 'Internal server error\r\n'
 
 def main(options):
-  server = wsgi.WSGIServer(('', config.PORT), wsgi_main)
+  server = wsgi.WSGIServer(('',options.port or config.PORT), wsgi_main)
   client_gc = gc.ClientGC()
   try:
     client_gc.start()
@@ -49,6 +49,7 @@ def cli_start():
   setprocname("shaveet")
   parser = OptionParser()
   parser.add_option("-d", "--daemon", dest="daemon",help="run as daemon",action="store_true",default=False)
+  parser.add_option("-p", "--port",dest="port",help="which port to listen",type="int",default=0)
   (options, args) = parser.parse_args()
   
   formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
