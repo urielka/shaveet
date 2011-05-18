@@ -1,0 +1,5 @@
+run:
+python flask.py
+
+then go to:
+http://localhost:5000/static/index.html
