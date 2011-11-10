@@ -96,11 +96,15 @@ def client_exists(client_id):
 def all_clients():
   return _clients.copy()
   
-def discard_client(client):
+def discard_client(client,kill=False):
   if client_exists(client.id):
     client.remove_from_channels()
     del _clients[client.id]
-    del client
+    if kill:
+      del client
+    else:
+      pass
+    
     
 def get_client_with_key(client_id_key):
   print client_id_key

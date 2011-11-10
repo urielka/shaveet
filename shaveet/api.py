@@ -127,7 +127,7 @@ def get_client_channels(client_id):
   return get_client(client_id).get_subscribed_channels()
   
 def kill_client(client_id):
-  return discard_client(get_client(client_id))
+  return discard_client(get_client(client_id),True)
   
 #this is the wsgi application entry point
 api_wsgi = wsgi_jsonrpc.WSGIJSONRPCApplication(methods=[subscribe,subscribe_many,unsubscribe,unsubscribe_many,unsubscribe_all_channel,new_message,
