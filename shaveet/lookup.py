@@ -1,12 +1,15 @@
 #std
+import logging
 from time import time
 #gevent
 from gevent.event import Event
 #shaveet
-from shaveet.utils import guid
+from shaveet.utils import guid,LRU
 from shaveet.consts import SYSTEM_ID,ADMIN_CHANNEL
-from shaveet.config import MAX_MESSAGES_PER_CHANNEL,MAX_IDLE_CLIENT,COMET_TIMEOUT,MIN_ALIVE_TIME
+from shaveet.config import MAX_MESSAGES_PER_CHANNEL,MAX_IDLE_CLIENT,COMET_TIMEOUT,MIN_ALIVE_TIME,MAX_CLIENTS_RECONNECT
 import shaveet#for api
+
+logger = logging.getLogger("shaveet.gc")
 
 class Client(object):
   """
@@ -31,11 +34,14 @@ class Client(object):
   def get_subscribed_channels(self):
     return self.channels.keys()
     
-  def add_channel(self,channel_name):
+  def add_channel(self,channel_name,cursor = False):
+    existed = channel_exist(channel_name)
     chn = get_channel(channel_name) 
     if not channel_name in self.channels:
-      #set to chn.id so we don't get old messages
-      self.channels[channel_name] = chn.id - 1  
+      if cursor and existed:#in case of reconnection set to old position
+        self.channels[channel_name] = cursor
+      else:#set to chn.id so we don't get old messages
+        self.channels[channel_name] = chn.id - 1
     chn.add_client(self.id)
     #notifies that this client has a new channel
     self.channels_event.set()
@@ -74,6 +80,8 @@ class Client(object):
 _channels = {}
 #client id -> Client
 _clients = {}
+#client id -> Client
+_dead_clients = LRU(MAX_CLIENTS_RECONNECT)
 
 ###############
 #  client     #
@@ -98,17 +106,25 @@ def all_clients():
   
 def discard_client(client,kill=False):
   if client_exists(client.id):
+    old_channels = client.channels.copy()
     client.remove_from_channels()
     del _clients[client.id]
     if kill:
       del client
     else:
-      pass
+      _dead_clients[client.id] = (client,old_channels)
     
     
 def get_client_with_key(client_id_key):
-  print client_id_key
   client_id,key = client_id_key.split("_!!_")
+  if client_id in _dead_clients:
+    #resurrect the client :)
+    client,old_channels =  _dead_clients[client_id]
+    _clients[client_id] = client
+    for channel_name,cursor in old_channels.iteritems():
+      client.add_channel(channel_name,cursor)
+    del _dead_clients[client_id]
+    logger.info("%s came back to life!",client_id)
   client = _clients[client_id]
   if client.key != key:
     raise KeyError("Wrong key for client")
