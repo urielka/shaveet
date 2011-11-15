@@ -32,7 +32,7 @@ def message_updates(env,start_response):
     #if updates found update the clients cursors
     for client in clients:
       client.update_cursors(updates)
-    start_response('200 OK', [('Content-Type', 'application/x-javascript'),('Access-Control-Allow-Origin','*')])
+    start_response('200 OK', [('Content-Type', 'application/x-javascript'),('Cache-Control','no-cache'),('Access-Control-Allow-Origin','*')])
     #generates the response like: callback({"channel_1":[[message],[message]],"channel_2":[[message]]})
     return "".join([callback,"(",dumps(dict((channel_name,[[message.id,message.message,message.client_id] for message in messages]) 
                                                                                   for channel_name,messages in updates.iteritems())),");"])

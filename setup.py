@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='shaveet', 
-      version='0.1', 
+      version='0.1.6', 
       packages=['shaveet'],
       package_data={'shaveet': ['static/*.js']},
       install_requires = ['gevent>=0.13','python-daemon','wsgi-jsonrpc','static'],

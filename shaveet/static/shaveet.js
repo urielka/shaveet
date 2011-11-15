@@ -75,8 +75,11 @@ var Shaveet = {
   {
     return Shaveet.listenBulk(channel_name,function(updates)
     {
+
       for(var i=0;i<updates.length;i++)
+      {
         func(updates[i]);
+      }
     });
   },
   stopListening:function(channel_name)
@@ -130,9 +133,10 @@ Shaveet.Transports = {};
 Shaveet.Transports.CORS = function (url,clbk,error){
   var request = new Shaveet.Transports.CORS.provider();
   url = url.replace("callback=?","callback=noop");
-  request.open("get",url,true);
+  request.open("get",url + "&ts=" + new Date().getTime(),true);
+  request.onprogress = function(){};
   request.onload = function(){
-    clbk(eval(request.responseText.replace(/noop\(/,'(').replace(/\);$/,')')));
+    clbk(eval(this.responseText.replace(/noop\(/,'(').replace(/\);$/,')')));
   }
   request.onerror = function(ev){
     if(error)error(request);
