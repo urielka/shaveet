@@ -20,6 +20,11 @@ var Shaveet = {
     for(var i=0;i<scripts.length;i++)
       if(scripts[i].src.indexOf("/static/shaveet.js") != -1)
       {
+        if(scripts[i].src.indexOf("disableCORS=1") != -1)
+          Shaveet.noCORS = true;
+        if(scripts[i].src.indexOf("disableIECORS=1") != -1)
+          Shaveet.noIECORS = true;
+
         Shaveet._baseURL = scripts[i].src.replace("/static/shaveet.js","").replace(/\?.*$/,"");
         break;
       }
@@ -147,9 +152,9 @@ Shaveet.Transports.CORS = function (url,clbk,error){
 Shaveet.Transports.CORS.init = function()
 {
   var xhr = new XMLHttpRequest();
-  if ("withCredentials" in xhr)
+  if ("withCredentials" in xhr && !Shaveet.noCORS)
     Shaveet.Transports.CORS.provider = XMLHttpRequest;
-  else if (typeof XDomainRequest != "undefined")
+  else if (typeof XDomainRequest != "undefined" && !Shaveet.noCORS && !Shaveet.noIECORS)
     Shaveet.Transports.CORS.provider = XDomainRequest;
   else
     Shaveet.Transports.CORS.provider = false;
